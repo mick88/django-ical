@@ -33,6 +33,7 @@ class TestItemsFeed(ICalFeed):
             'start': datetime(2012, 5, 1, 18, 00),
             'end': datetime(2012, 5, 1, 20, 00),
             'geolocation': (37.386013, -122.082932),
+            'rrule': build_rrule(freq='WEEKLY', until=datetime.now(), wkst='SU', byday='MO,TU'),
             'organizer': 'john.doe@example.com',
         }, {
             'title': 'Title2',
@@ -41,6 +42,7 @@ class TestItemsFeed(ICalFeed):
             'start': datetime(2012, 5, 6, 18, 00),
             'end': datetime(2012, 5, 6, 20, 00),
             'geolocation': (37.386013, -122.082932),
+            'rrule': build_rrule(freq='WEEKLY', until=datetime.now(), wkst='MO', byday='MO,TU,WE'),
             'organizer': {
                 'cn': 'John Doe',
                 'email': 'john.doe@example.com',
