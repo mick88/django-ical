@@ -1,4 +1,5 @@
 #:coding=utf-8:
+from icalendar.prop import vRecur
 
 import pytz
 import icalendar
@@ -6,6 +7,7 @@ from datetime import datetime
 
 from django.test import TestCase
 from django.test.client import RequestFactory
+from django_ical.ical_utils import build_rrule
 
 from django_ical.feedgenerator import ICal20Feed
 from django_ical.views import ICalFeed
@@ -196,3 +198,53 @@ class ICal20FeedTest(TestCase):
 
         self.assertIn('Content-Disposition', response)
         self.assertEqual(response['content-disposition'], 'attachment; filename="123.ics"')
+
+
+class TestUtils(TestCase):
+    def test_parse_rrule_empty(self):
+        self.assertEqual(build_rrule(), {})
+
+    def test_parse_rrule_freq_invalid(self):
+        try:
+            build_rrule(freq='invalid')
+            self.fail('Value error was expected')
+        except ValueError:
+            pass
+
+    def test_parse_rrule_all_values(self):
+        rrule = build_rrule(
+            count=1,
+            interval=2,
+            bysecond=3,
+            byminute=4,
+            byhour=5,
+            byweekno=6,
+            bymonthday=7,
+            byyearday=8,
+            bymonth=9,
+            until=datetime(2015, 1, 13, 14, 15, 16),
+            bysetpos=10,
+            wkst='MO',
+            byday='TU',
+            freq='WEEKLY',
+        )
+
+        # expected length
+        self.assertEqual(len(rrule), 14)
+        # testing that function created keys for each key in vRecur:
+        self.assertEqual(sorted(rrule.keys()), sorted(vRecur.types.keys()))
+        #expected values:
+        self.assertEqual(rrule['COUNT'], 1)
+        self.assertEqual(rrule['INTERVAL'], 2)
+        self.assertEqual(rrule['BYSECOND'], 3)
+        self.assertEqual(rrule['BYMINUTE'], 4)
+        self.assertEqual(rrule['BYHOUR'], 5)
+        self.assertEqual(rrule['BYWEEKNO'], 6)
+        self.assertEqual(rrule['BYMONTHDAY'], 7)
+        self.assertEqual(rrule['BYYEARDAY'], 8)
+        self.assertEqual(rrule['BYMONTH'], 9)
+        self.assertEqual(rrule['UNTIL'], datetime(2015, 1, 13, 14, 15, 16))
+        self.assertEqual(rrule['BYSETPOS'], 10)
+        self.assertEqual(rrule['WKST'], 'MO')
+        self.assertEqual(rrule['BYDAY'], 'TU')
+        self.assertEqual(rrule['FREQ'], 'WEEKLY')
