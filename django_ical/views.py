@@ -37,6 +37,7 @@ ICAL_EXTRA_FIELDS = (
     'location',         # location
     'geolocation',      # latitude;longitude
     'organizer',        # email, cn, and role
+    'rrule',            # recurrence rule
 )
 
 
